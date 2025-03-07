@@ -20,7 +20,7 @@ class MessageHandler {
             await this.sendWelcomeMenu(message.from);
           } else if (incomingMessage === 'ayuda') {
             await this.helpMenu(message.from);
-          } else if (incomingMessage === 'carta' || "menu") {
+          } else if (incomingMessage === 'carta') {
             await this.sendMedia(message.from);
           } else if (incomingMessage === 'ubicacion') {
             await this.sendLocation(message.from);
