@@ -166,7 +166,7 @@ class MessageHandler {
         response = 'Entiendo\nEspera un momento 🤗 te comunicaré con un asesor...';
         break;
       default:
-        response = "Oops\nPorfa, elige una de las opciones del menú o escribe *Hola* para volver a empezar\nTambién, escribe *Carta* para verla.";
+        response = "Oops😔\nPorfa, elige una de las opciones del menú o escribe *Hola* para volver a empezar\nTambién, escribe *Carta* para verla.";
     }
     await whatsappService.sendMessage(to, response);
   }
