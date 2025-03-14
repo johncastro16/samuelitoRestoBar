@@ -61,18 +61,14 @@ class WhatsAppService {
           type: "flow",
           header: {
             type: "text",
-            text: "Reserva de cita"
+            text: "Hacer pedido"
           },
           body: { 
-            text: "Haz tu reserva" 
-          },
-          footer: {
-            text: "Agenda tu reserva"
+            text: "Haz clic aquí 👇" 
           },
           action
         },
       };
-      console.log(data)
   
       await sendToWhatsApp(data);
     } catch (error) {

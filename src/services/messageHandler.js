@@ -119,7 +119,7 @@ class MessageHandler {
       parameters: {
         "flow_message_version": "3",
         "flow_id": "1027458519251277",
-        "flow_cta": "Agendar"
+        "flow_cta": "Pedido"
       },
     }
     await whatsappService.sendUrl(to, action);
@@ -211,8 +211,8 @@ class MessageHandler {
     switch (state.step) {
       case 'pedido':
         state.step = 'producto';
-        await this.menuUrl(to);
-        response = "Ahora, dime qué producto quieres comprar?";
+        response = this.menuUrl(to);
+        console.log(response);
         break;
       case 'producto':
         state.producto = message;
