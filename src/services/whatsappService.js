@@ -50,18 +50,29 @@ class WhatsAppService {
     }
   }
 
-  async sendUrl(to, bodyText, action) {
+  async sendUrl(to, action) {
     try {
       const data = {
+        recipient_type: 'individual',
         messaging_product: 'whatsapp',
         to,
         type: 'interactive',
         interactive: {
-          type: "cta_url",
-          body: { text: bodyText },
+          type: "flow",
+          header: {
+            type: "text",
+            text: "Reserva de cita"
+          },
+          body: { 
+            text: "Haz tu reserva" 
+          },
+          footer: {
+            text: "Agenda tu reserva"
+          },
           action
         },
       };
+      console.log(data)
   
       await sendToWhatsApp(data);
     } catch (error) {

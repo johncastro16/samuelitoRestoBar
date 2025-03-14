@@ -1,7 +1,7 @@
 import whatsappService from './whatsappService.js';
 import appendToSheet from './googleSheetsService.js';
 import openAiService from './openAiService.js';
-import { response } from 'express';
+import { datacatalog } from 'googleapis/build/src/apis/datacatalog/index.js';
 
 class MessageHandler {
 
@@ -114,16 +114,15 @@ class MessageHandler {
   }
 
   async menuUrl(to) {
-    const bodyText = "Elige lo que quieres en nuestro menú y vuelve acá para decirme 😊: "
-    const action =
-    {
-      name: "cta_url",
+    const action = {
+      name: "flow",
       parameters: {
-        display_text: "Ver menú",
-        url: "https://wa.me/c/573153652520"
-      }
-    };
-    await whatsappService.sendUrl(to, bodyText, action);
+        "flow_message_version": "3",
+        "flow_id": "1027458519251277",
+        "flow_cta": "Agendar"
+      },
+    }
+    await whatsappService.sendUrl(to, action);
   }
 
   waiting = (delay, callback) => {
@@ -135,7 +134,8 @@ class MessageHandler {
     switch (option) {
       case 'option_1':
         this.hiringState[to] = { step: 'pedido' }
-        response = "*Continuemos con tu pedido* 😊";
+        response = "Elige lo que quieres pedir en nuestra carta 😊"
+        await this.sendMedia(to);
         break;
       case 'option_2':
         this.appointmentState[to] = { step: 'reserva' }
@@ -211,7 +211,7 @@ class MessageHandler {
     switch (state.step) {
       case 'pedido':
         state.step = 'producto';
-        this.menuUrl(to);
+        await this.menuUrl(to);
         response = "Ahora, dime qué producto quieres comprar?";
         break;
       case 'producto':
