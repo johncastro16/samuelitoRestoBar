@@ -118,8 +118,8 @@ class MessageHandler {
       name: "flow",
       parameters: {
         "flow_message_version": "3",
-        "flow_id": "1027458519251277",
-        "flow_cta": "Pedido"
+        "flow_id": "1341793967064141",
+        "flow_cta": "Reserva"
       },
     }
     await whatsappService.sendUrl(to, action);
