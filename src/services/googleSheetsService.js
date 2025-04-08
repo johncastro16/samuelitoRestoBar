@@ -3,10 +3,10 @@ import { google } from 'googleapis';
 
 const sheets = google.sheets('v4');
 
-async function addRowToSheet(auth, spreadsheetId, values) {
+async function addRowToSheet(auth, spreadsheetId, values) {  
     const request = {
         spreadsheetId,
-        range: 'pedidos',
+        range: 'datos',
         valueInputOption: 'RAW',
         insertDataOption: 'INSERT_ROWS',
         resource: {
@@ -23,7 +23,7 @@ async function addRowToSheet(auth, spreadsheetId, values) {
     }
 }
 
-const appendToSheet = async (data) => {
+const appendToSheet = async (data, spreadsheetId) => {
     try {
         const auth = new google.auth.GoogleAuth({
             credentials: {
@@ -42,7 +42,6 @@ const appendToSheet = async (data) => {
         });
 
         const authClient = await auth.getClient();
-        const spreadsheetId = process.env.SPREADSHEETID
 
         await addRowToSheet(authClient, spreadsheetId, data);
         return 'Datos correctamente agregados'

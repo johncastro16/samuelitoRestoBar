@@ -1,3 +1,4 @@
+import { language } from "googleapis/build/src/apis/language/index.js";
 import sendToWhatsApp from "../services/httpRequest/sendToWhatsApp.js";
 
 class WhatsAppService {
@@ -50,7 +51,7 @@ class WhatsAppService {
     }
   }
 
-  async sendUrl(to, action) {
+  async sendFlow(to, action) {
     try {
       const data = {
         recipient_type: 'individual',
@@ -61,7 +62,33 @@ class WhatsAppService {
           type: "flow",
           header: {
             type: "text",
-            text: "Hacer pedido"
+            text: "Datos de envío:"
+          },
+          body: { 
+            text: "Haz clic aquí 👇" 
+          },
+          action
+        },
+      };
+      
+    await sendToWhatsApp(data);
+    } catch (error) {
+      console.log("Error: ", error);
+    }
+  }
+  
+  async sendFlowReserva(to, action) {
+    try {
+      const data = {
+        recipient_type: 'individual',
+        messaging_product: 'whatsapp',
+        to,
+        type: 'interactive',
+        interactive: {
+          type: "flow",
+          header: {
+            type: "text",
+            text: "Reservación:"
           },
           body: { 
             text: "Haz clic aquí 👇" 
@@ -70,7 +97,75 @@ class WhatsAppService {
         },
       };
   
-      await sendToWhatsApp(data);
+    await sendToWhatsApp(data);
+    } catch (error) {
+      console.log("Error: ", error);
+    }
+  }
+  
+  async sendFlowMenu(to, action) {
+    try {
+      const data = {
+        recipient_type: 'individual',
+        messaging_product: 'whatsapp',
+        to,
+        type: 'interactive',
+        interactive: {
+          type: "flow",
+          header: {
+            type: "text",
+            text: "Menú:"
+          },
+          body: { 
+            text: "Haz clic aquí 👇" 
+          },
+          action
+        },
+      };
+  
+    await sendToWhatsApp(data);
+    } catch (error) {
+      console.log("Error: ", error);
+    }
+  }
+
+  async sendMenu(to, template) {
+    try {
+      const data = {
+        recipient_type: 'individual',
+        messaging_product: 'whatsapp',
+        to,
+        type: 'template',
+        template: template
+      };
+  
+    await sendToWhatsApp(data);
+    } catch (error) {
+      console.log("Error: ", error);
+    }
+  }
+  
+  async sendFlowEncuesta(to, action) {
+    try {
+      const data = {
+        recipient_type: 'individual',
+        messaging_product: 'whatsapp',
+        to,
+        type: 'interactive',
+        interactive: {
+          type: "flow",
+          header: {
+            type: "text",
+            text: "Encuesta de satisfacción:"
+          },
+          body: { 
+            text: "Diligenciala aquí 👇" 
+          },
+          action
+        },
+      };
+  
+    await sendToWhatsApp(data);
     } catch (error) {
       console.log("Error: ", error);
     }

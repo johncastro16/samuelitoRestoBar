@@ -3,7 +3,12 @@ import config from './config/env.js';
 import webhookRoutes from './routes/webhookRoutes.js';
 
 const app = express();
-app.use(express.json());
+app.use(express.json({
+  // store the raw request body to use it for signature verification
+  verify: (req, res, buf, encoding) => {
+    req.rawBody = buf?.toString(encoding || "utf8");
+  },
+}));
 
 app.use('/', webhookRoutes);
 

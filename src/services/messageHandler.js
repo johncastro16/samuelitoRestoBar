@@ -1,7 +1,6 @@
 import whatsappService from './whatsappService.js';
 import appendToSheet from './googleSheetsService.js';
 import openAiService from './openAiService.js';
-import { datacatalog } from 'googleapis/build/src/apis/datacatalog/index.js';
 
 class MessageHandler {
 
@@ -11,10 +10,10 @@ class MessageHandler {
     this.assistandState = {};
   }
 
-  async handleIncomingMessage(message, senderInfo) {
+  async handleIncomingMessage(message, senderInfo, screen) {
     try {
         if (message?.type === 'text') {
-            const incomingMessage = message.text.body.toLowerCase().trim();
+          const incomingMessage = message.text.body.toLowerCase().trim();
         if (this.isGreeting(incomingMessage)) {
             await this.sendWelcomeMessage(message.from, message.id, senderInfo);
             await this.sendWelcomeMenu(message.from);
@@ -22,32 +21,45 @@ class MessageHandler {
             await this.helpMenu(message.from);
           } else if (incomingMessage === 'carta') {
             await this.sendMedia(message.from);
-          } else if (incomingMessage === 'ubicacion') {
+          } else if (incomingMessage === 'ubicacion' || incomingMessage === 'ubicación') {
             await this.sendLocation(message.from);
           } else if (incomingMessage === 'asesor') {
             await this.sendContact(message.from);
-          } else if (this.appointmentState[message.from]) {
+          } 
+          else if (this.appointmentState[message.from]) {
               await this.handleAppointmentFlow(message.from, incomingMessage);
-          } else if (this.hiringState[message.from]) {
+          } 
+          else if (this.hiringState[message.from]) {
               await this.handleHiringFlow(message.from, incomingMessage);
-          } else if (this.assistandState[message.from]) {
+            } 
+            else if (this.assistandState[message.from]) {
               await this.handleAssistandFlow(message.from, incomingMessage);
-          } else {
-              await this.handleMenuOption(message.from, incomingMessage);
+          } 
+          else {
+            await this.handleMenuOption(message.from, incomingMessage);
           }
             await whatsappService.markAsRead(message.id);
           } else if (message?.type === 'interactive') {
+            if (message?.interactive.type === 'nfm_reply') {
+              await this.respFlow(message.from, screen);
+              await whatsappService.markAsRead(message.id);
+            }
+            else {
               const option = message?.interactive?.button_reply?.id;
               await this.handleMenuOption(message.from, option);
               await whatsappService.markAsRead(message.id);
+            }
           }
+        
     } catch (error) {
         console.log("Error: ", error);
     }
   }
 
+  async handleFlow() {}
+
   isGreeting(message) {
-    const greetings = ["hola", "buenas", "buenos dias", "buenas tardes", "buenas noches", "saludos", "como estás", "hl", "gracias", "muchas gracias"];
+    const greetings = ["hola", "hi", "hello", "HL", "Oe", "buenas", "buenos dias", "buenas tardes", "buenas noches", "saludos", "como estás", "hl", "gracias", "muchas gracias"];
     return greetings.includes(message);
   }
 
@@ -83,13 +95,13 @@ class MessageHandler {
   }
 
   async menuOpcionalHiring(to) {
-    const menuMessage = "*¿Está correcta la información?*"
+    const menuMessage = "¿Nos ayudarías respondiendo una pequeña encuesta?"
     const buttons = [
       {
         type: 'reply', reply: { id: 'opt1', title: 'Si, continuar ✅' }
       },
       {
-        type: 'reply', reply: { id: 'option_1', title: 'No, corregir ❌' }
+        type: 'reply', reply: { id: 'option_1', title: 'No, salir ❌' }
       }
     ];
 
@@ -113,16 +125,57 @@ class MessageHandler {
     await whatsappService.sendInteractiveButtons(to, menuMessage, buttons);
   }
 
-  async menuUrl(to) {
+  async menuPedido(to) {
     const action = {
       name: "flow",
       parameters: {
         "flow_message_version": "3",
-        "flow_id": "1341793967064141",
+        "flow_id": "1293383568429390",
+        "flow_cta": "Pedido"
+      },
+    }
+    return await whatsappService.sendFlow(to, action);
+  }
+  
+  async menuReserva(to) {
+    const action = {
+      name: "flow",
+      parameters: {
+        "flow_message_version": "3",
+        "flow_id": "1040184084592472",
         "flow_cta": "Reserva"
       },
     }
-    await whatsappService.sendUrl(to, action);
+    return await whatsappService.sendFlowReserva(to, action);
+  }
+  
+  async menuCarta(to) {
+    const template = { 
+      name: "catalogo",
+      language: { 
+          code: "Es_Co" },
+      components: [
+          {
+            type: "button",
+            sub_type: "CATALOG",
+            index: 0
+          }
+      ] 
+  }
+    
+    return await whatsappService.sendMenu(to, template);
+  }
+  
+  async encuesta(to) {
+    const action = {
+      name: "flow",
+      parameters: {
+        "flow_message_version": "3",
+        "flow_id": "1073257407961051",
+        "flow_cta": "Encuesta de satisfacción"
+      },
+    }
+    return await whatsappService.sendFlowEncuesta(to, action);
   }
 
   waiting = (delay, callback) => {
@@ -133,37 +186,32 @@ class MessageHandler {
     let response;
     switch (option) {
       case 'option_1':
-        this.hiringState[to] = { step: 'pedido' }
-        response = "Elige lo que quieres pedir en nuestra carta 😊"
-        await this.sendMedia(to);
+        await this.menuCarta(to);
+        response = "Elige lo que quieres pedir en nuestro menú 👆"
         break;
       case 'option_2':
         this.appointmentState[to] = { step: 'reserva' }
         await this.sendMediaEvento(to)
-        response = "*Continuemos con tu reservación* 😊";
+        response = "Para continuar con tu reservación escribe *Ok* 😊";
         break;
       case 'option_3':
         this.assistandState[to] = { step: 'question' };
-        response = 'Realiza tu pregunta: ❓';
-        break;
-
-      case 'op_1':
-        response = "¡Recibido!\nMuchas gracias por tu reserva 🤗\n\nTe esperamos!"
-        await this.sendLocation(to);
+        response = 'Realiza tu pregunta: ❔';
         break;
       case 'option_4':
         response = "Te esperamos en nuestro restaurante! 📍"
         await this.sendLocation(to);
         break;
-      case 'option_6':
+      case 'option_5':
         response = "Para hablar con un asesor escribe al siguiente contacto 📱"
         await this.sendContact(to);
         break;
-      case 'opt1':
-        response = '¡Pedido recibido!\nPronto nos pondremos en contacto contigo! 🤗';
-        break;
       case 'op_3':
         response = 'Entiendo\nEspera un momento 🤗 te comunicaré con un asesor...';
+        break;
+      case 'opt1':
+        await this.encuesta(to);
+        response = "Aquí tienes 👆"
         break;
       default:
         response = "Oops😔\nPorfa, elige una de las opciones del menú o escribe *Hola* para volver a empezar\nTambién, escribe *Carta* para verla.";
@@ -173,70 +221,45 @@ class MessageHandler {
 
   async handleAppointmentFlow(to, message) {
     const state = this.appointmentState[to];
+    delete this.appointmentState[to];
     let response;
   
     switch (state.step) {
       case 'reserva':
-        state.evento = "Festival Gastronómico Mexicano";
-        state.step = 'nombre';
-        response = "Para continuar con tu reserva danos los siguientes datos por favor 😊:\n\n*Nombre completo:*";
-        break;
-      case 'nombre':
-        state.nombre = message;
-        state.step = 'cantidad';
-        response = `*Mesa para cuantos:* `;
-        break;
-      case 'cantidad':
-        state.cantidad = message;
-        state.step = 'hora';
-        response = '*Hora:* ';
-        break;
-      case 'hora':
-        state.hora = message;
-        state.step = 'confirma';
-        response = this.completeAppointment(to);
-        this.menuOpcional(to)
+        await this.menuReserva(to);
         break;
       default:
         response = "Lo siento 😔 no entendí tu respuesta\nPor Favor, elige una de las opciones del menú.";
-    }
-    await whatsappService.sendMessage(to, response);
+        await whatsappService.sendMessage(to, response);
+      }
   }
 
-
-  async handleHiringFlow(to, message) {
-    const state = this.hiringState[to];
+  async handleHiringFlow(to, pedido) {
     let response;
 
-    switch (state.step) {
+    switch ("pedido") {
       case 'pedido':
-        state.step = 'producto';
-        response = this.menuUrl(to);
-        console.log(response);
-        break;
-      case 'producto':
-        state.producto = message;
-        state.step = 'nombre';
-        response = "*Nombre completo:* ";
-        break;
-      case 'nombre':
-        state.nombre = message;
-        state.step = 'celular';
-        response = '*Celular de contacto:* 📱';
-        break;
-      case 'celular':
-        state.celular = message;
-        state.step = 'direccion';
-        response = '*Dirección de domicilio completa:* 🏠';
-        break;
-      case 'direccion':
-        state.direccion = message;
-        response = this.completeHiring(to);
-        this.menuOpcionalHiring(to);
+        response = `*Pedido:* ${pedido}`
+        await this.menuPedido(to);
         break;
       default:
         response = "Lo siento 😔 no entendí tu respuesta\nPor Favor, elige una de las opciones del menú.";
+      }
+      await whatsappService.sendMessage(to, response);
+  }
+
+  async respFlow(to, screen) {
+    let response;
+    if (screen === "SUMMARY") {
+      response = "¡Pedido recibido!\nPronto nos pondremos en contacto contigo! 🤗"
+      this.menuOpcionalHiring(to);
+    } else if (screen === "RESUMEN") {
+      response = "¡Recibido!\nMuchas gracias por tu reserva 🤗\n\nTe esperamos!"
+      this.menuOpcionalHiring(to);
+    } else if (screen === "RECOMMEND") {
+      response = "¡Recibido!\nMuchas gracias por tu opinión! 🤗"
     }
+  
     await whatsappService.sendMessage(to, response);
   }
 
@@ -262,43 +285,43 @@ class MessageHandler {
     await whatsappService.sendMediaMessage(to, type, mediaUrl, caption);
   }
 
-  completeHiring(to) {
-    const appointment = this.hiringState[to];
-    delete this.hiringState[to];
+  completeHiring(data) {
+    let userData;
+    const spreadsheetId = "1LTPMiL9j8OuAhcFzw7IM8XYEDwk_kTuG5yYVlERyjb4";
+    if (data.recomendacion) {
+      userData = [
+        data.name,
+        data.producto,
+        data.recomendacion,
+        data.address,
+        data.phone,
+        data.pago,
+      ]
+    } else {
+      userData = [
+        data.name,
+        data.producto,
+        data.address,
+        data.phone,
+        data.pago,
+      ]
+    }
 
-    const userData = [
-      to,
-      appointment.nombre,
-      appointment.producto,
-      appointment.celular,
-      appointment.direccion,
-      new Date().toISOString()
-    ]
-
-    appendToSheet(userData);
-
-    return `*Carrito de compras*🛍️🛒\n\n*Nombre completo:* ${appointment.nombre}\n*Pedido:* ${appointment.producto}\n*Celular:* ${appointment.celular}\n*Dirección:* ${appointment.direccion}\n\n*Confirma la información para continuar.* 😊`
+    appendToSheet(userData, spreadsheetId);
   }
 
-  completeAppointment(to) {
-    const appointment = this.appointmentState[to];
-    delete this.appointmentState[to];
-
+  completeAppointment(data) {
+    const spreadsheetId = "1atxEZcRm6etjz35vBEJmCJkCKZHvs9A3n76IEeZ3Ldw";
     const userData = [
-      to,
-      appointment.nombre,
-      appointment.evento,
-      appointment.cantidad,
-      appointment.hora,
-      new Date().toISOString()
+      data.nombre,
+      data.fecha,
+      data.hora,
+      data.cuantos,
+      data.donde,
     ]
 
-    appendToSheet(userData);
-
-    return `*Resumen reservación* 📋\n\n*Nombre completo:* ${appointment.nombre}\n*Evento:* ${appointment.evento}\n*Cuantas personas:* ${appointment.cantidad}\n*Hora:* ${appointment.hora}\n\n*Verifica que la información esté correcta* 😊`
+    appendToSheet(userData, spreadsheetId);
   }
-
-
 
   async handleAssistandFlow(to, message) {
     const state = this.assistandState[to];
@@ -308,11 +331,15 @@ class MessageHandler {
     const buttons = [
       { type: 'reply', reply: { id: 'option_4', title: "Si, Gracias 😊" } },
       { type: 'reply', reply: { id: 'option_3', title: 'Hacer otra pregunta' } },
-      { type: 'reply', reply: { id: 'option_6', title: 'Asesor 🤵' } }
+      { type: 'reply', reply: { id: 'option_5', title: 'Asesor 🤵' } }
     ];
 
-    if (state.step === 'question') {
-      response = await openAiService(message);
+    switch (state.step) {
+      case 'question':
+        response = await openAiService(message);
+        break;
+      default:
+        response = "Lo siento 😔 no entendí tu respuesta\nPor Favor, elige una de las opciones del menú.";
     }
 
     delete this.assistandState[to];
