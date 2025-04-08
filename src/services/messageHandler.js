@@ -27,13 +27,13 @@ class MessageHandler {
             await this.sendContact(message.from);
           } 
           else if (this.appointmentState[message.from]) {
-              await this.handleAppointmentFlow(message.from, incomingMessage);
+            await this.handleAppointmentFlow(message.from, incomingMessage);
           } 
           else if (this.hiringState[message.from]) {
-              await this.handleHiringFlow(message.from, incomingMessage);
-            } 
-            else if (this.assistandState[message.from]) {
-              await this.handleAssistandFlow(message.from, incomingMessage);
+            await this.handleHiringFlow(message.from, incomingMessage);
+          } 
+          else if (this.assistandState[message.from]) {
+            await this.handleAssistandFlow(message.from, incomingMessage);
           } 
           else {
             await this.handleMenuOption(message.from, incomingMessage);
@@ -56,8 +56,6 @@ class MessageHandler {
     }
   }
 
-  async handleFlow() {}
-
   isGreeting(message) {
     const greetings = ["hola", "hi", "hello", "HL", "Oe", "buenas", "buenos dias", "buenas tardes", "buenas noches", "saludos", "como estás", "hl", "gracias", "muchas gracias"];
     return greetings.includes(message);
@@ -78,7 +76,7 @@ class MessageHandler {
   }
 
   async sendWelcomeMenu(to) {
-    const menuMessage = "Elige una Opción"
+    const menuMessage = "Elige una Opción";
     const buttons = [
       {
         type: 'reply', reply: { id: 'option_1', title: 'Pedido 🛒' }
@@ -95,7 +93,7 @@ class MessageHandler {
   }
 
   async menuOpcionalHiring(to) {
-    const menuMessage = "¿Nos ayudarías respondiendo una pequeña encuesta?"
+    const menuMessage = "¿Nos ayudarías respondiendo una pequeña encuesta?";
     const buttons = [
       {
         type: 'reply', reply: { id: 'opt1', title: 'Si, continuar ✅' }
@@ -109,7 +107,7 @@ class MessageHandler {
   }
 
   async menuOpcional(to, op) {
-    const menuMessage = "Quieres continuar?"
+    const menuMessage = "Quieres continuar?";
     const buttons = [
       {
         type: 'reply', reply: { id: 'op_1', title: 'Si ✅' }
@@ -187,11 +185,11 @@ class MessageHandler {
     switch (option) {
       case 'option_1':
         await this.menuCarta(to);
-        response = "Elige lo que quieres pedir en nuestro menú 👆"
+        response = "Elige lo que quieres pedir en nuestro menú 👆";
         break;
       case 'option_2':
         this.appointmentState[to] = { step: 'reserva' }
-        await this.sendMediaEvento(to)
+        await this.sendMediaEvento(to);
         response = "Para continuar con tu reservación escribe *Ok* 😊";
         break;
       case 'option_3':
@@ -199,11 +197,11 @@ class MessageHandler {
         response = 'Realiza tu pregunta: ❔';
         break;
       case 'option_4':
-        response = "Te esperamos en nuestro restaurante! 📍"
+        response = "Te esperamos en nuestro restaurante! 📍";
         await this.sendLocation(to);
         break;
       case 'option_5':
-        response = "Para hablar con un asesor escribe al siguiente contacto 📱"
+        response = "Para hablar con un asesor escribe al siguiente contacto 📱";
         await this.sendContact(to);
         break;
       case 'op_3':
@@ -211,7 +209,7 @@ class MessageHandler {
         break;
       case 'opt1':
         await this.encuesta(to);
-        response = "Aquí tienes 👆"
+        response = "Aquí tienes 👆";
         break;
       default:
         response = "Oops😔\nPorfa, elige una de las opciones del menú o escribe *Hola* para volver a empezar\nTambién, escribe *Carta* para verla.";
@@ -239,7 +237,7 @@ class MessageHandler {
 
     switch ("pedido") {
       case 'pedido':
-        response = `*Pedido:* ${pedido}`
+        response = `*Pedido:* ${pedido}`;
         await this.menuPedido(to);
         break;
       default:
@@ -251,13 +249,13 @@ class MessageHandler {
   async respFlow(to, screen) {
     let response;
     if (screen === "SUMMARY") {
-      response = "¡Pedido recibido!\nPronto nos pondremos en contacto contigo! 🤗"
+      response = "¡Pedido recibido!\nPronto nos pondremos en contacto contigo! 🤗";
       this.menuOpcionalHiring(to);
     } else if (screen === "RESUMEN") {
-      response = "¡Recibido!\nMuchas gracias por tu reserva 🤗\n\nTe esperamos!"
+      response = "¡Recibido!\nMuchas gracias por tu reserva 🤗\n\nTe esperamos!";
       this.menuOpcionalHiring(to);
     } else if (screen === "RECOMMEND") {
-      response = "¡Recibido!\nMuchas gracias por tu opinión! 🤗"
+      response = "¡Recibido!\nMuchas gracias por tu opinión! 🤗";
     }
   
     await whatsappService.sendMessage(to, response);
@@ -327,7 +325,7 @@ class MessageHandler {
     const state = this.assistandState[to];
     let response;
 
-    const menuMessage = "¿Resolví tu pregunta?"
+    const menuMessage = "¿Resolví tu pregunta?";
     const buttons = [
       { type: 'reply', reply: { id: 'option_4', title: "Si, Gracias 😊" } },
       { type: 'reply', reply: { id: 'option_3', title: 'Hacer otra pregunta' } },
