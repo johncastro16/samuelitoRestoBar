@@ -3,7 +3,6 @@ import { decryptRequest, encryptResponse, FlowEndpointException } from "../servi
 import { getNextScreen } from "../services/flow.js";
 import { nextScreen } from "../services/flowReserva.js";
 import { nextEncuesta } from "../services/flowEncuesta.js";
-import { nextMenu } from "../services/flowMenu.js";
 import messageHandler from '../services/messageHandler.js';
 import crypto from "crypto";
 import fs from 'fs';
