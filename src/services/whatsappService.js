@@ -103,31 +103,6 @@ class WhatsAppService {
     }
   }
   
-  async sendFlowMenu(to, action) {
-    try {
-      const data = {
-        recipient_type: 'individual',
-        messaging_product: 'whatsapp',
-        to,
-        type: 'interactive',
-        interactive: {
-          type: "flow",
-          header: {
-            type: "text",
-            text: "Menú:"
-          },
-          body: { 
-            text: "Haz clic aquí 👇" 
-          },
-          action
-        },
-      };
-  
-    await sendToWhatsApp(data);
-    } catch (error) {
-      console.log("Error: ", error);
-    }
-  }
 
   async sendMenu(to, template) {
     try {

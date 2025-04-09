@@ -6,7 +6,6 @@ class MessageHandler {
 
   constructor() {
     this.appointmentState = {};
-    this.hiringState = {};
     this.assistandState = {};
   }
 
@@ -28,9 +27,6 @@ class MessageHandler {
           } 
           else if (this.appointmentState[message.from]) {
             await this.handleAppointmentFlow(message.from, incomingMessage);
-          } 
-          else if (this.hiringState[message.from]) {
-            await this.handleHiringFlow(message.from, incomingMessage);
           } 
           else if (this.assistandState[message.from]) {
             await this.handleAssistandFlow(message.from, incomingMessage);
@@ -68,7 +64,7 @@ class MessageHandler {
   async sendWelcomeMessage(to, messageId, senderInfo) {
     try {
         const name = this.getSenderName(senderInfo).match(/^(\w+)/)?.[1];
-        const welcomeMessage = `¡Hola 👋 ${name}!\nBienvenido a *Samuelito RestoBar*🌭🍔🍟🍕\n\n¿En qué te puedo ayudar? 😊\n\nEscribe *ayuda* si la necesitas`;
+        const welcomeMessage = `¡Hola 👋 ${name}!\nBienvenid@ a *Samuelito RestoBar*🌭🍔🍟🍕\n\n¿En qué te puedo ayudar? 😊\n\nEscribe *ayuda* si la necesitas`;
         await whatsappService.sendMessage(to, welcomeMessage, messageId);
     } catch (error) {
         console.log("Error: ", error);
@@ -99,7 +95,7 @@ class MessageHandler {
         type: 'reply', reply: { id: 'opt1', title: 'Si, continuar ✅' }
       },
       {
-        type: 'reply', reply: { id: 'option_1', title: 'No, salir ❌' }
+        type: 'reply', reply: { id: 'option_5', title: 'No, terminar ✖' }
       }
     ];
 
@@ -113,7 +109,7 @@ class MessageHandler {
         type: 'reply', reply: { id: 'op_1', title: 'Si ✅' }
       },
       {
-        type: 'reply', reply: { id: 'option_2', title: 'No ❌' }
+        type: 'reply', reply: { id: 'option_2', title: 'No ✖' }
       },
       {
         type: 'reply', reply: { id: 'op_3', title: 'Hablar con asesor 🤵' }
@@ -185,7 +181,7 @@ class MessageHandler {
     switch (option) {
       case 'option_1':
         await this.menuCarta(to);
-        response = "Elige lo que quieres pedir en nuestro menú 👆";
+        response = "Elige lo que quieres pedir en nuestro menú: ";
         break;
       case 'option_2':
         this.appointmentState[to] = { step: 'reserva' }
@@ -201,8 +197,7 @@ class MessageHandler {
         await this.sendLocation(to);
         break;
       case 'option_5':
-        response = "Para hablar con un asesor escribe al siguiente contacto 📱";
-        await this.sendContact(to);
+        response = "Es un placer para nosotros servirles, esperamos pueda disfrutar de su pedido 😊👩‍🍳\nVuelve pronto!";
         break;
       case 'op_3':
         response = 'Entiendo\nEspera un momento 🤗 te comunicaré con un asesor...';
@@ -235,14 +230,9 @@ class MessageHandler {
   async handleHiringFlow(to, pedido) {
     let response;
 
-    switch ("pedido") {
-      case 'pedido':
-        response = `*Pedido:* ${pedido}`;
-        await this.menuPedido(to);
-        break;
-      default:
-        response = "Lo siento 😔 no entendí tu respuesta\nPor Favor, elige una de las opciones del menú.";
-      }
+    response = `*Pedido:* ${pedido}`;
+    await this.menuPedido(to);
+
       await whatsappService.sendMessage(to, response);
   }
 
@@ -253,7 +243,7 @@ class MessageHandler {
       this.menuOpcionalHiring(to);
     } else if (screen === "RESUMEN") {
       response = "¡Recibido!\nMuchas gracias por tu reserva 🤗\n\nTe esperamos!";
-      this.menuOpcionalHiring(to);
+      this.sendLocation(to);
     } else if (screen === "RECOMMEND") {
       response = "¡Recibido!\nMuchas gracias por tu opinión! 🤗";
     }
@@ -328,8 +318,7 @@ class MessageHandler {
     const menuMessage = "¿Resolví tu pregunta?";
     const buttons = [
       { type: 'reply', reply: { id: 'option_4', title: "Si, Gracias 😊" } },
-      { type: 'reply', reply: { id: 'option_3', title: 'Hacer otra pregunta' } },
-      { type: 'reply', reply: { id: 'option_5', title: 'Asesor 🤵' } }
+      { type: 'reply', reply: { id: 'option_3', title: 'Hacer otra pregunta' } }
     ];
 
     switch (state.step) {
