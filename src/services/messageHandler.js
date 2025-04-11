@@ -9,7 +9,7 @@ class MessageHandler {
     this.assistandState = {};
   }
 
-  async handleIncomingMessage(message, senderInfo, screen) {
+  async handleIncomingMessage(message, senderInfo, screen, datosReserva) {
     try {
         if (message?.type === 'text') {
           const incomingMessage = message.text.body.toLowerCase().trim();
@@ -37,7 +37,7 @@ class MessageHandler {
             await whatsappService.markAsRead(message.id);
           } else if (message?.type === 'interactive') {
             if (message?.interactive.type === 'nfm_reply') {
-              await this.respFlow(message.from, screen);
+              await this.respFlow(message.from, screen, datosReserva);
               await whatsappService.markAsRead(message.id);
             }
             else {
@@ -64,7 +64,7 @@ class MessageHandler {
   async sendWelcomeMessage(to, messageId, senderInfo) {
     try {
         const name = this.getSenderName(senderInfo).match(/^(\w+)/)?.[1];
-        const welcomeMessage = `¡Hola 👋 ${name}!\nBienvenid@ a *Samuelito RestoBar*🌭🍔🍟🍕\n\n¿En qué te puedo ayudar? 😊\n\nEscribe *ayuda* si la necesitas`;
+        const welcomeMessage = `¡Hola 👋 ${name}!\nBienvenidos a *Samuelito RestoBar*🌭🍔🍟🍕\n\n¿En qué te puedo ayudar? 😊\n\nEscribe *ayuda* si la necesitas`;
         await whatsappService.sendMessage(to, welcomeMessage, messageId);
     } catch (error) {
         console.log("Error: ", error);
@@ -236,13 +236,18 @@ class MessageHandler {
       await whatsappService.sendMessage(to, response);
   }
 
-  async respFlow(to, screen) {
+  async respFlow(to, screen, datosReserva) {
     let response;
     if (screen === "SUMMARY") {
       response = "¡Pedido recibido!\nPronto nos pondremos en contacto contigo! 🤗";
       this.menuOpcionalHiring(to);
     } else if (screen === "RESUMEN") {
-      response = "¡Recibido!\nMuchas gracias por tu reserva 🤗\n\nTe esperamos!";
+      datosReserva = `
+Fecha:  ${datosReserva.fecha},
+Hora: ${datosReserva.hora},
+Cuantas personas: ${datosReserva.cuantos}
+      `
+      response = `Recibido ✅\n\nAcabas de Reservar: \n${datosReserva}\n\nUna nueva experiencia te espera!`;
       this.sendLocation(to);
     } else if (screen === "RECOMMEND") {
       response = "¡Recibido!\nMuchas gracias por tu opinión! 🤗";

@@ -29,6 +29,7 @@ function isRequestSignatureValid(req) {
 }
 
 let ventana;
+let datosReserva;
 let pedido = {};
 let productos;
 let pedidoStr;
@@ -38,7 +39,7 @@ class WebhookController {
     const senderInfo = req.body.entry?.[0]?.changes[0]?.value?.contacts?.[0];
     if (message) {
       if (message?.type === 'interactive' && message?.interactive.type === 'nfm_reply') {
-        await messageHandler.handleIncomingMessage(message, senderInfo, ventana);
+        await messageHandler.handleIncomingMessage(message, senderInfo, ventana, datosReserva);
       }
       else if (message?.type === 'order') {
         productos = message?.order.product_items;
@@ -93,7 +94,7 @@ class WebhookController {
       screenResponse = await getNextScreen(decryptedBody);
     }
     ventana = decryptedBody.screen
-
+    datosReserva = decryptedBody.data
     res.send(encryptResponse(screenResponse, aesKeyBuffer, initialVectorBuffer));
     
   };
