@@ -1,6 +1,7 @@
 import whatsappService from './whatsappService.js';
 import appendToSheet from './googleSheetsService.js';
 import openAiService from './openAiService.js';
+import { createWompiPaymentLink } from './wompiService.js';
 
 class MessageHandler {
 
@@ -9,7 +10,7 @@ class MessageHandler {
     this.assistandState = {};
   }
 
-  async handleIncomingMessage(message, senderInfo, screen, datosReserva) {
+  async handleIncomingMessage(message, senderInfo, screen, datosReserva, datosPedido, pedidoStr) {
     try {
         if (message?.type === 'text') {
           const incomingMessage = message.text.body.toLowerCase().trim();
@@ -37,7 +38,7 @@ class MessageHandler {
             await whatsappService.markAsRead(message.id);
           } else if (message?.type === 'interactive') {
             if (message?.interactive.type === 'nfm_reply') {
-              await this.respFlow(message.from, screen, datosReserva);
+              await this.respFlow(message.from, screen, datosReserva, datosPedido, pedidoStr);
               await whatsappService.markAsRead(message.id);
             }
             else {
@@ -64,7 +65,7 @@ class MessageHandler {
   async sendWelcomeMessage(to, messageId, senderInfo) {
     try {
         const name = this.getSenderName(senderInfo).match(/^(\w+)/)?.[1];
-        const welcomeMessage = `¡Hola 👋 ${name}!\nBienvenidos a *Samuelito RestoBar*🌭🍔🍟🍕\n\n¿En qué te puedo ayudar? 😊\n\nEscribe *ayuda* si la necesitas`;
+        const welcomeMessage = `¡Hola 👋 ${name}!\nBienvenid@ a *Samuelito RestoBar*🌭🍔🍟🍕\n\n¿En qué te puedo ayudar? 😊\n\nEscribe *ayuda* si la necesitas`;
         await whatsappService.sendMessage(to, welcomeMessage, messageId);
     } catch (error) {
         console.log("Error: ", error);
@@ -236,13 +237,28 @@ class MessageHandler {
       await whatsappService.sendMessage(to, response);
   }
 
-  async respFlow(to, screen, datosReserva) {
+  async respFlow(to, screen, datosReserva, datosPedido, pedidoStr) {
     let response;
     if (screen === "SUMMARY") {
-      response = "¡Pedido recibido!\nPronto nos pondremos en contacto contigo! 🤗";
-      this.menuOpcionalHiring(to);
+      if (datosPedido.datos.pago === "Efectivo") {
+        response = "¡Pedido recibido!\nPronto nos pondremos en contacto contigo! 🤗";
+      } else if (datosPedido.datos.pago === "PSE") {
+        try {
+          // Generar enlace de pago WOMPi
+          const idlink = await createWompiPaymentLink(
+            datosPedido.monto * 100, // Monto en centavos
+            "COP",
+            pedidoStr
+          );
+  
+          response = `Resumen de tu pedido🛒:\n\n${pedidoStr}\n\nUtiliza el siguiente *link de pago*:\n\nhttps://checkout.wompi.co/l/${idlink}\n\nLuego, envíanos el comprobante para confirmar tu pedido. ¡Gracias! 😊`;
+        } catch (error) {
+          response = "Hubo un problema al generar el enlace de pago. Por favor, intenta nuevamente.";
+        }
+        // this.menuOpcionalHiring(to);
     } else if (screen === "RESUMEN") {
       datosReserva = `
+Nombre: ${datosReserva.nombre},
 Fecha:  ${datosReserva.fecha},
 Hora: ${datosReserva.hora},
 Cuantas personas: ${datosReserva.cuantos}
@@ -255,6 +271,7 @@ Cuantas personas: ${datosReserva.cuantos}
   
     await whatsappService.sendMessage(to, response);
   }
+}
 
   async helpMenu(to) {
     const response = "Bienvenido al menú de ayuda de *Samuelito Restobar*\n\nPara solicitar la carta escribe *Carta*\nPara hablar con un asesor escribe *Asesor*\nPara solicitar la ubicación escribe *Ubicacion*\n\nEspero te sirva! 😊"

@@ -30,23 +30,27 @@ function isRequestSignatureValid(req) {
 
 let ventana;
 let datosReserva;
+let datosPedido = {};
 let pedido = {};
 let productos;
 let pedidoStr;
+let precioTotal = 0;
 class WebhookController {
   async handleIncoming(req, res) {
     const message = req.body.entry?.[0]?.changes[0]?.value?.messages?.[0];
     const senderInfo = req.body.entry?.[0]?.changes[0]?.value?.contacts?.[0];
     if (message) {
       if (message?.type === 'interactive' && message?.interactive.type === 'nfm_reply') {
-        await messageHandler.handleIncomingMessage(message, senderInfo, ventana, datosReserva);
+        await messageHandler.handleIncomingMessage(message, senderInfo, ventana, datosReserva, datosPedido, pedidoStr);
       }
       else if (message?.type === 'order') {
         productos = message?.order.product_items;
         for (let i = 0; i < productos.length; i++) {
+          precioTotal += productos[i].item_price * productos[i].quantity;
           pedido[productos[i].product_retailer_id] = productos[i].quantity;
         }
-        pedidoStr = Object.entries(pedido).map(([key, value]) => `${key}: ${value}`).join(',\n');
+        datosPedido['monto'] = precioTotal;
+        pedidoStr = Object.entries(pedido).map(([key, value]) => `${key}:   ${value}`).join(',\n');
         pedido = {};
         await messageHandler.handleHiringFlow(message.from, pedidoStr);
       }
@@ -81,20 +85,26 @@ class WebhookController {
 
     
     const { aesKeyBuffer, initialVectorBuffer, decryptedBody } = decryptedRequest;
-    // handle health check request
     let screenResponse;
     if (decryptedBody.screen === 'DETAILS' || decryptedBody.screen === "SUMMARY") {
       screenResponse = await getNextScreen(decryptedBody, pedidoStr);
-    } else if (decryptedBody.screen === 'RESERVA' || decryptedBody.screen === "RESUMEN") {
+    } 
+    if (decryptedBody.screen === 'RESERVA' || decryptedBody.screen === "RESUMEN") {
       screenResponse = await nextScreen(decryptedBody);
     } else if (decryptedBody.screen === 'RECOMMEND' || decryptedBody.screen === "RATE") {
       screenResponse = await nextEncuesta(decryptedBody);
     }
+    // handle health check request
     if (decryptedBody.action === "ping") {
       screenResponse = await getNextScreen(decryptedBody);
     }
     ventana = decryptedBody.screen
-    datosReserva = decryptedBody.data
+    if (ventana === "RESUMEN") {
+      datosReserva = decryptedBody.data
+    } else if (ventana === "SUMMARY") {
+      datosPedido["datos"] = decryptedBody.data
+    }
+
     res.send(encryptResponse(screenResponse, aesKeyBuffer, initialVectorBuffer));
     
   };

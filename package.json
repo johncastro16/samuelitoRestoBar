@@ -17,7 +17,8 @@
     "axios": "^1.7.9",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
-    "googleapis": "^144.0.0"
+    "googleapis": "^144.0.0",
+    "openai": "^4.94.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.9"
