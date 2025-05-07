@@ -152,8 +152,63 @@ class MessageHandler {
       components: [
           {
             type: "button",
-            sub_type: "CATALOG",
-            index: 0
+            sub_type: "MPM",
+            index: 0,
+            "parameters": [
+          {
+            "type": "action",
+            "action": {
+              "sections": [
+                {
+                  "title": "Para picar",
+                  "product_items": [
+                    {
+                      "product_retailer_id": "Chips de Plátano"
+                    },
+                    {
+                      "product_retailer_id": "Patacones de la Casa"
+                    },
+                    {
+                      "product_retailer_id": "Mini Burger x3"
+                    },
+                    {
+                      "product_retailer_id": "Don Chicharrón"
+                    },
+                    {
+                      "product_retailer_id": "Canastas del Mar"
+                    },
+                    {
+                      "product_retailer_id": "Cóctel de Camarones"
+                    },
+                    {
+                      "product_retailer_id": "Chorizo Artesanal"
+                    },
+                  ]
+                },
+                {
+                  "title": "Platos Fuertes",
+                  "product_items": [
+                    {
+                      "product_retailer_id": "Baby con Champiñones al Roquefort (Nuevo)"
+                    },
+                    {
+                      "product_retailer_id": "Lomo imperial con Fettuccine a los Cuatro Quesos"
+                    },
+                    {
+                      "product_retailer_id": "Lomo Mar y Tierra"
+                    },
+                    {
+                      "product_retailer_id": "Baby Beef"
+                    },
+                    {
+                      "product_retailer_id": "Churrasco de Cerdo"
+                    },
+                  ]
+                }
+              ]
+            }
+          }
+        ]
           }
       ] 
   }
@@ -256,7 +311,8 @@ class MessageHandler {
           response = "Hubo un problema al generar el enlace de pago. Por favor, intenta nuevamente.";
         }
         // this.menuOpcionalHiring(to);
-    } else if (screen === "RESUMEN") {
+    }
+   } else if (screen === "RESUMEN") {
       datosReserva = `
 Nombre: ${datosReserva.nombre},
 Fecha:  ${datosReserva.fecha},
@@ -270,8 +326,8 @@ Cuantas personas: ${datosReserva.cuantos}
     }
   
     await whatsappService.sendMessage(to, response);
-  }
 }
+
 
   async helpMenu(to) {
     const response = "Bienvenido al menú de ayuda de *Samuelito Restobar*\n\nPara solicitar la carta escribe *Carta*\nPara hablar con un asesor escribe *Asesor*\nPara solicitar la ubicación escribe *Ubicacion*\n\nEspero te sirva! 😊"
