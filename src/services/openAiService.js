@@ -3,14 +3,13 @@ import OpenAI from "openai";
 
 const openAiService = async (message) => {	
 
-	const client = new OpenAI({
-		baseURL: 'https://api.studio.nebius.com/v1/',
-		apiKey: config.NEBIUS_API_KEY,
+	const client = new OpenAI({,
+		apiKey: config.OPENAI_API_KEY,
 	});
 
 	try {
 		const response = await client.chat.completions.create({
-			"model": "meta-llama/Llama-3.2-1B-Instruct",
+			"model": "gpt-4o",
 			"temperature": 0,
 			"max_tokens" : 200,
 			messages: [
