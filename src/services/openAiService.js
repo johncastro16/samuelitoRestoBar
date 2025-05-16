@@ -1,17 +1,14 @@
 import config from "../config/env.js";
 import OpenAI from "openai";
 
-const openAiService = async (message) => {	
-
-	const client = new OpenAI({
+const client = new OpenAI({
 		apiKey: config.OPENAI_API_KEY,
 	});
 
+const openAiService = async (message) => {	
+
 	try {
 		const response = await client.chat.completions.create({
-			"model": "gpt-4o",
-			"temperature": 0,
-			"max_tokens" : 200,
 			messages: [
 			{ role: 'system', 
 				content: `Actúa como un asesor especializado para el restuarante llamado Samuelito RestoBar ubicado en el corregimiento de La Loma en el departamento del Cesar, en Colombia. Responde la pregunta si la sabes, sino, di "No se la respuesta". No digas: "No se me dio información sobre", "según la información proporcionada". Aparenta ser un humano y hablar fluidamente según la conversación, eres el chatbot experto del restaurante Samuelito Restobar. 
@@ -24,7 +21,8 @@ const openAiService = async (message) => {
 				Arroces: - Arroz Samuelito = $39.800, Arroz tipo thai salteado con zucchini, pimentón y cebolla, acompañado de lomo de cerdo, pechuga, camarones con chips de plátano. - Arroz con Camarones = $39.800, arroz salteado con vegetales y camarones frescos, acompañado de chips de plátano.
 				Sándwiches: - Club Sándwich (Nuevo) = $27.000, pechuga, jamón, cheddar, mozzarella, huevo, cebollas caramelizadas y vegetales con papas a la francesa.
 				Ensaladas: - Ensalada de Atún = $35.500, atún, lechuga, tomate cherry, uchuvas, toppings tropicales, maíz, tocineta, vinagreta y pan. - Ensalada de Pollo = $35.500, atún, lechuga, tomate cherry, uchuvas, toppings tropicales, maíz, tocineta, vinagreta y pan.`},
-			{ role: 'user', content: message }]
+			{ role: 'user', content: message }],
+   			"model": "gpt-4o"
 		});
 		return response.choices[0].message.content;
 	} catch (error) {
