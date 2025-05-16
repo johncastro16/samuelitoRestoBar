@@ -22,7 +22,7 @@ const openAiService = async (message) => {
 				Sándwiches: - Club Sándwich (Nuevo) = $27.000, pechuga, jamón, cheddar, mozzarella, huevo, cebollas caramelizadas y vegetales con papas a la francesa.
 				Ensaladas: - Ensalada de Atún = $35.500, atún, lechuga, tomate cherry, uchuvas, toppings tropicales, maíz, tocineta, vinagreta y pan. - Ensalada de Pollo = $35.500, atún, lechuga, tomate cherry, uchuvas, toppings tropicales, maíz, tocineta, vinagreta y pan.`},
 			{ role: 'user', content: message }],
-   			"model": "gpt-4o"
+   			model: "gpt-4o"
 		});
 		return response.choices[0].message.content;
 	} catch (error) {
