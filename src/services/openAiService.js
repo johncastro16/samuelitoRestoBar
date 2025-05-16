@@ -3,7 +3,7 @@ import OpenAI from "openai";
 
 const openAiService = async (message) => {	
 
-	const client = new OpenAI({,
+	const client = new OpenAI({
 		apiKey: config.OPENAI_API_KEY,
 	});
 
