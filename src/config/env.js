@@ -10,7 +10,7 @@ export default {
   PORT: process.env.PORT || 3000,
   BASE_URL: process.env.BASE_URL,
   HUGGINGFACE_API_KEY: process.env.HUGGINGFACE_API_KEY,
-  OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+  NEBIUS_API_KEY: process.env.NEBIUS_API_KEY,
   PRIVATE_KEY: process.env.PRIVATE_KEY,
   APP_SECRET: process.env.APP_SECRET,
   PASSPHRASE: process.env.PASSPHRASE,
