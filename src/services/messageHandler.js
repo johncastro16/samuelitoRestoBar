@@ -160,7 +160,7 @@ class MessageHandler {
             "action": {
               "sections": [
                 {
-                  "title": "Para picar",
+                  "title": "PARA PICAR",
                   "product_items": [
                     {
                       "product_retailer_id": "Chips de Plátano"
@@ -186,7 +186,7 @@ class MessageHandler {
                   ]
                 },
                 {
-                  "title": "Platos Fuertes",
+                  "title": "PLATOS FUERTES",
                   "product_items": [
                     {
                       "product_retailer_id": "Baby con Champiñones al Roquefort (Nuevo)"
@@ -202,6 +202,131 @@ class MessageHandler {
                     },
                     {
                       "product_retailer_id": "Churrasco de Cerdo"
+                    },
+                    {
+                      "product_retailer_id": "Churrasco de Cerdo Gratinado"
+                    },
+                    {
+                      "product_retailer_id": "Steak Pimienta"
+                    },
+                    {
+                      "product_retailer_id": "Costillas BBQ Premium"
+                    },
+                    {
+                      "product_retailer_id": "Pechuga al Grill"
+                    },
+                    {
+                      "product_retailer_id": "Pechuga Gratinada"
+                    },
+                    {
+                      "product_retailer_id": "Punta de Anca Importada (Americana)"
+                    },
+                    {
+                      "product_retailer_id": "Parrillada Mixta"
+                    },
+                    {
+                      "product_retailer_id": "New York Steak"
+                    },
+                    {
+                      "product_retailer_id": "Picada de la Casa (Para 2)"
+                    },
+                    {
+                      "product_retailer_id": "Picada de la Casa (Para 4)"
+                    },
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+          }
+      ] 
+  }
+    
+    return await whatsappService.sendMenu(to, template);
+  }
+
+  async menuCarta2(to) {
+    const template = { 
+      name: "menucarta",
+      language: { 
+          code: "Es_Co" },
+      components: [
+          {
+            type: "button",
+            sub_type: "MPM",
+            index: 0,
+            "parameters": [
+          {
+            "type": "action",
+            "action": {
+              "sections": [
+                {
+                  "title": "PASTAS",
+                  "product_items": [
+                    {
+                      "product_retailer_id": "Pastas al Ajillo"
+                    },
+                  ]
+                },
+                {
+                  "title": "PESCADOS Y MARISCOS",
+                  "product_items": [
+                    {
+                      "product_retailer_id": "Cazuela de Mariscos"
+                    },
+                  ]
+                },
+                {
+                  "title": "ARROCES",
+                  "product_items": [
+                    {
+                      "product_retailer_id": "Arroz Samuelito"
+                    },
+                    {
+                      "product_retailer_id": "Arroz con Camarones"
+                    },
+                  ]
+                },
+                {
+                  "title": "SÁNDWICHES",
+                  "product_items": [
+                    {
+                      "product_retailer_id": "Club Sándwich"
+                    },
+                  ]
+                },
+                {
+                  "title": "SUSHI",
+                  "product_items": [
+                    {
+                      "product_retailer_id": "Sushi Samuelito Rolls"
+                    },
+                  ]
+                },
+                {
+                  "title": "COMIDAS RÁPIDAS",
+                  "product_items": [
+                    {
+                      "product_retailer_id": "Burger La Nuestra"
+                    },
+                    {
+                      "product_retailer_id": "Burger la del Chef"
+                    },
+                    {
+                      "product_retailer_id": "Clasic Burger"
+                    },
+                    {
+                      "product_retailer_id": "La Felipa Burger"
+                    },
+                    {
+                      "product_retailer_id": "Samuelito Burger"
+                    },
+                    {
+                      "product_retailer_id": "Hot Dog Suizo"
+                    },
+                    {
+                      "product_retailer_id": "Desgranado Pupero"
                     },
                   ]
                 }
@@ -237,6 +362,7 @@ class MessageHandler {
     switch (option) {
       case 'option_1':
         await this.menuCarta(to);
+        await this.menuCarta2(to);
         response = "Elige lo que quieres pedir en nuestro menú: ";
         break;
       case 'option_2':
@@ -286,7 +412,9 @@ class MessageHandler {
   async handleHiringFlow(to, pedido) {
     let response;
 
-    response = `*Pedido:* ${pedido}`;
+    response = `*Pedido:*
+
+${pedido}`;
     await this.menuPedido(to);
 
       await whatsappService.sendMessage(to, response);

@@ -33,21 +33,36 @@ export const getNextScreen = async (decryptedBody, producto) => {
   }
 
   if (action === "data_exchange") {
+    console.log(data);
     let result;
     let details;
     switch (screen) {
       case "DETAILS":
-        if (data.recomendacion) {
+        if (data.recomendacion && data.address) {
           details = `Nombre:    ${data.name}\n
 Producto: ${producto}\n
-Recomendaciones:    ${data.recomendacion}\n
+Dirección:    ${data.address}\n
+Celular de contacto:    ${data.phone}\n
+Medio de pago:    ${data.pago}\n
+Recomendaciones:    ${data.recomendacion}`;
+        }
+        else if (data.address) {
+          details = `Nombre:    ${data.name}\n
+Producto: ${producto}\n
 Dirección:    ${data.address}\n
 Celular de contacto:    ${data.phone}\n
 Medio de pago:    ${data.pago}`;
-        } else {
+        }
+        else if (data.recomendacion) {
           details = `Nombre:    ${data.name}\n
 Producto: ${producto}\n
-Dirección:    ${data.address}\n
+Celular de contacto:    ${data.phone}\n
+Medio de pago:    ${data.pago}\n
+Recomendaciones:    ${data.recomendacion}`;
+        }
+         else {
+          details = `Nombre:    ${data.name}\n
+Producto: ${producto}\n
 Celular de contacto:    ${data.phone}\n
 Medio de pago:    ${data.pago}`;
         }
