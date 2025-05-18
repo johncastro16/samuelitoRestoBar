@@ -3,6 +3,22 @@ import appendToSheet from './googleSheetsService.js';
 import openAiService from './openAiService.js';
 import { createWompiPaymentLink } from './wompiService.js';
 
+function isWithinBusinessHours() {
+  // Hora actual en Colombia (GMT-5)
+  const now = new Date();
+  const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+  const colombiaTime = new Date(utc - (5 * 60 * 60000));
+  const hour = colombiaTime.getHours();
+  const minute = colombiaTime.getMinutes();
+
+  // Horario: 12:00 (12 p.m.) a 22:00 (10 p.m.)
+  const opening = 12 * 60; // 12:00 p.m. en minutos
+  const closing = 22 * 60; // 10:00 p.m. en minutos
+  const current = hour * 60 + minute;
+
+  return current >= opening && current < closing;
+}
+
 class MessageHandler {
 
   constructor() {
@@ -12,6 +28,7 @@ class MessageHandler {
 
   async handleIncomingMessage(message, senderInfo, screen, datosReserva, datosPedido, pedidoStr) {
     try {
+      if (!isWithinBusinessHours()) {
         if (message?.type === 'text') {
           const incomingMessage = message.text.body.toLowerCase().trim();
         if (this.isGreeting(incomingMessage)) {
@@ -47,11 +64,15 @@ class MessageHandler {
               await whatsappService.markAsRead(message.id);
             }
           }
-        
-    } catch (error) {
-        console.log("Error: ", error);
-    }
+      } else {
+        const msg = "¡Hola! 😊\nNuestro horario de atención es *todos los días* de *12:00 p.m. a 10:00 p.m.*\nPor favor vuelve a escribirnos en nuestro horario laboral o déjanos tu mensaje y pronto te responderemos. ¡Gracias por escribirnos! 😊";
+        await whatsappService.sendMessage(message.from, msg, message.id);
+        return;
+      }
+  } catch (error) {
+    console.log("Error: ", error);
   }
+}
 
   isGreeting(message) {
     const greetings = ["hola", "hi", "hello", "HL", "Oe", "buenas", "buenos dias", "buenas tardes", "buenas noches", "saludos", "como estás", "hl", "gracias", "muchas gracias"];
@@ -482,24 +503,15 @@ Cuantas personas: ${datosReserva.cuantos}
   completeHiring(data) {
     let userData;
     const spreadsheetId = "1LTPMiL9j8OuAhcFzw7IM8XYEDwk_kTuG5yYVlERyjb4";
-    if (data.recomendacion) {
-      userData = [
-        data.name,
-        data.producto,
-        data.recomendacion,
-        data.address,
-        data.phone,
-        data.pago,
-      ]
-    } else {
+
       userData = [
         data.name,
         data.producto,
         data.address,
         data.phone,
         data.pago,
+        data.recomendacion
       ]
-    }
 
     appendToSheet(userData, spreadsheetId);
   }
