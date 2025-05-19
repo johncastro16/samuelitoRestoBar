@@ -43,6 +43,10 @@ class MessageHandler {
           } else if (incomingMessage === 'asesor') {
             await this.sendContact(message.from);
           } 
+           else if (this.isQuestion(incomingMessage)) {
+            this.assistandState[message.from] = { step: 'question' };
+            await this.handleAssistandFlow(message.from, incomingMessage);
+          } 
           else if (this.appointmentState[message.from]) {
             await this.handleAppointmentFlow(message.from, incomingMessage);
           } 
@@ -78,6 +82,35 @@ class MessageHandler {
     const greetings = ["hola", "hi", "hello", "HL", "Oe", "buenas", "buenos dias", "buenas tardes", "buenas noches", "saludos", "como estás", "hl", "gracias", "muchas gracias"];
     return greetings.includes(message);
   }
+  
+  isQuestion(message) {
+  const lower = message.toLowerCase();
+  return (
+    lower.includes('que') ||
+    lower.includes('qué') ||
+    lower.includes('quien') ||
+    lower.includes('quién') ||
+    lower.includes('cual') ||
+    lower.includes('cuál') ||
+    lower.includes('cuando') ||
+    lower.includes('cuándo') ||
+    lower.includes('porque') ||
+    lower.includes('por que') ||
+    lower.includes('porqué') ||
+    lower.includes('por qué') ||
+    lower.includes('para que') ||
+    lower.includes('para qué') ||
+    lower.includes('donde') ||
+    lower.includes('dónde') ||
+    lower.includes('como') ||
+    lower.includes('cómo') ||
+    lower.includes('cuanto') ||
+    lower.includes('cuánto') ||
+    lower.includes('pregunta') ||
+    lower.includes('¿') ||
+    lower.includes('?')
+  );
+}
 
   getSenderName(senderInfo) {
     return senderInfo.profile?.name || senderInfo.wa_id || "Cliente";
