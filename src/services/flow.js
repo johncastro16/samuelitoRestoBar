@@ -33,7 +33,6 @@ export const getNextScreen = async (decryptedBody, producto) => {
   }
 
   if (action === "data_exchange") {
-    console.log(data);
     let result;
     let details;
     switch (screen) {

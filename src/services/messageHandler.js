@@ -543,7 +543,8 @@ Cuantas personas: ${datosReserva.cuantos}
         data.address,
         data.phone,
         data.pago,
-        data.recomendacion
+        data.recomendacion,
+        new Date().toLocaleString('es-CO', { timeZone: 'America/Bogota' }),
       ]
 
     appendToSheet(userData, spreadsheetId);
@@ -557,6 +558,7 @@ Cuantas personas: ${datosReserva.cuantos}
       data.hora,
       data.cuantos,
       data.donde,
+      new Date().toLocaleString('es-CO', { timeZone: 'America/Bogota' })
     ]
 
     appendToSheet(userData, spreadsheetId);
