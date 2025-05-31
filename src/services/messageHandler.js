@@ -158,16 +158,16 @@ class MessageHandler {
   }
 
   async menuOpcional(to, op) {
-    const menuMessage = "Quieres continuar?";
+    const menuMessage = "Elige el menú que deseas";
     const buttons = [
       {
-        type: 'reply', reply: { id: 'op_1', title: 'Si ✅' }
+        type: 'reply', reply: { id: 'op_1', title: 'Entrada Platos fuerte' }
       },
       {
-        type: 'reply', reply: { id: 'option_2', title: 'No ✖' }
+        type: 'reply', reply: { id: 'option_2', title: 'Pasta, Arroces y Marisco' }
       },
       {
-        type: 'reply', reply: { id: 'op_3', title: 'Hablar con asesor 🤵' }
+        type: 'reply', reply: { id: 'op_3', title: 'Bebidas, Postres y Café' }
       }
     ];
 
@@ -261,6 +261,9 @@ class MessageHandler {
                       "product_retailer_id": "Churrasco de Cerdo Gratinado"
                     },
                     {
+                      "product_retailer_id": "Churrasco de Cerdo con Salsa de Tocineta"
+                    },
+                    {
                       "product_retailer_id": "Steak Pimienta"
                     },
                     {
@@ -273,6 +276,9 @@ class MessageHandler {
                       "product_retailer_id": "Pechuga Gratinada"
                     },
                     {
+                      "product_retailer_id": "Pechuga en Salsa con Tocineta"
+                    },
+                    {
                       "product_retailer_id": "Punta de Anca Importada (Americana)"
                     },
                     {
@@ -280,6 +286,9 @@ class MessageHandler {
                     },
                     {
                       "product_retailer_id": "New York Steak"
+                    },
+                    {
+                      "product_retailer_id": "Rib Eye Steak"
                     },
                     {
                       "product_retailer_id": "Picada de la Casa (Para 2)"
@@ -319,7 +328,13 @@ class MessageHandler {
                   "title": "PASTAS",
                   "product_items": [
                     {
+                      "product_retailer_id": "Salmón en Mantequilla de Pimienta Rosada"
+                    },
+                    {
                       "product_retailer_id": "Pastas al Ajillo"
+                    },
+                    {
+                      "product_retailer_id": "Pastas Alfred"
                     },
                   ]
                 },
@@ -327,7 +342,13 @@ class MessageHandler {
                   "title": "PESCADOS Y MARISCOS",
                   "product_items": [
                     {
+                      "product_retailer_id": "Salmón Pepper Pink"
+                    },
+                    {
                       "product_retailer_id": "Cazuela de Mariscos"
+                    },
+                    {
+                      "product_retailer_id": "Camarones al Ajillo"
                     },
                   ]
                 },
@@ -346,7 +367,21 @@ class MessageHandler {
                   "title": "SÁNDWICHES",
                   "product_items": [
                     {
+                      "product_retailer_id": "Sándwich con Atún"
+                    },
+                    {
                       "product_retailer_id": "Club Sándwich"
+                    },
+                  ]
+                },
+                {
+                  "title": "ENSALADAS",
+                  "product_items": [
+                    {
+                      "product_retailer_id": "Ensalada de Atún"
+                    },
+                    {
+                      "product_retailer_id": "Ensalada con Pollo"
                     },
                   ]
                 },
@@ -377,13 +412,91 @@ class MessageHandler {
                       "product_retailer_id": "Samuelito Burger"
                     },
                     {
+                      "product_retailer_id": "Hot Dog Hawaiano"
+                    },
+                    {
+                      "product_retailer_id": "Hot Dog Clásico"
+                    },
+                    {
                       "product_retailer_id": "Hot Dog Suizo"
+                    },
+                    {
+                      "product_retailer_id": "Salchipupera"
+                    },
+                    {
+                      "product_retailer_id": "Salchipapa Tradicional"
+                    },
+                    {
+                      "product_retailer_id": "Desgranado de la Casa"
                     },
                     {
                       "product_retailer_id": "Desgranado Pupero"
                     },
                   ]
                 }
+              ]
+            }
+          }
+        ]
+          }
+      ] 
+  }
+    
+    return await whatsappService.sendMenu(to, template);
+  }
+
+  async menuCarta3(to) {
+    const template = { 
+      name: "catalogo",
+      language: { 
+          code: "Es_Co" },
+      components: [
+          {
+            type: "button",
+            sub_type: "MPM",
+            index: 0,
+            "parameters": [
+          {
+            "type": "action",
+            "action": {
+              "sections": [
+                {
+                  "title": "CAFÉ",
+                  "product_items": [
+                    {
+                      "product_retailer_id": "Café Balanceado"
+                    },
+                    {
+                      "product_retailer_id": "Café Expreso"
+                    },
+                    {
+                      "product_retailer_id": "Café Americano"
+                    },
+                    {
+                      "product_retailer_id": "Capuchino"
+                    },
+                  ]
+                },
+                {
+                  "title": "POSTRES",
+                  "product_items": [
+                    {
+                      "product_retailer_id": "Panacota de Frutos Rojos"
+                    },
+                    {
+                      "product_retailer_id": "Brownie con Helado"
+                    },
+                    {
+                      "product_retailer_id": "Malteada de Nutella"
+                    },
+                    {
+                      "product_retailer_id": "Malteada de Oreo"
+                    },
+                    {
+                      "product_retailer_id": "Malteada de Café"
+                    },
+                  ]
+                },
               ]
             }
           }
@@ -416,7 +529,8 @@ class MessageHandler {
     switch (option) {
       case 'option_1':
         await this.menuCarta(to);
-        await this.menuCarta2(to);
+        this.menuCarta2(to);
+        this.menuCarta3(to);
         response = "Elige lo que quieres pedir en nuestro menú: ";
         break;
       case 'option_2':
