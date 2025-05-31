@@ -531,7 +531,7 @@ class MessageHandler {
         await this.menuCarta(to);
         this.menuCarta2(to);
         this.menuCarta3(to);
-        response = "Elige lo que quieres pedir en nuestro menú: ";
+        response = "Elige lo que quieres";
         break;
       case 'option_2':
         this.appointmentState[to] = { step: 'reserva' }
