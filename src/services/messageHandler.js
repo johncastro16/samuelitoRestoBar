@@ -28,7 +28,7 @@ class MessageHandler {
 
   async handleIncomingMessage(message, senderInfo, screen, datosReserva, datosPedido, pedidoStr) {
     try {
-      if (isWithinBusinessHours()) {
+      if (!isWithinBusinessHours()) {
         if (message?.type === 'text') {
           const incomingMessage = message.text.body.toLowerCase().trim();
         if (this.isGreeting(incomingMessage)) {
