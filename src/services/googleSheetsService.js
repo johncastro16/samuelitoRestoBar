@@ -43,7 +43,7 @@ async function ensureSheetExists(auth, spreadsheetId, sheetName) {
 async function addRowToSheet(auth, spreadsheetId, values, sheetName) {
     const request = {
         spreadsheetId,
-        range: `${sheetName}`,
+        range: `datos`,
         valueInputOption: 'RAW',
         insertDataOption: 'INSERT_ROWS',
         resource: {
