@@ -12,7 +12,21 @@ function getTodaySheetName() {
     return `${day}/${month}/${year}`;
 }
 
-// Crea una hoja si no existe
+const TEMPLATE_SHEET_NAME = "02/06/2025";
+
+// Obtiene el ID de una hoja por su nombre
+async function getSheetIdByName(auth, spreadsheetId, sheetName) {
+    const getSheets = await sheets.spreadsheets.get({
+        spreadsheetId,
+        auth,
+    });
+    const sheet = getSheets.data.sheets.find(
+        (s) => s.properties.title === sheetName
+    );
+    return sheet ? sheet.properties.sheetId : null;
+}
+
+// Duplica la hoja plantilla si no existe la hoja del día
 async function ensureSheetExists(auth, spreadsheetId, sheetName) {
     const getSheets = await sheets.spreadsheets.get({
         spreadsheetId,
@@ -22,16 +36,21 @@ async function ensureSheetExists(auth, spreadsheetId, sheetName) {
         (sheet) => sheet.properties.title === sheetName
     );
     if (!exists) {
+        // Obtén el ID de la hoja plantilla
+        const templateSheetId = await getSheetIdByName(auth, spreadsheetId, TEMPLATE_SHEET_NAME);
+        if (!templateSheetId) {
+            throw new Error(`No se encontró la hoja plantilla "${TEMPLATE_SHEET_NAME}"`);
+        }
+        // Duplica la hoja plantilla
         await sheets.spreadsheets.batchUpdate({
             spreadsheetId,
             auth,
             requestBody: {
                 requests: [
                     {
-                        addSheet: {
-                            properties: {
-                                title: sheetName,
-                            },
+                        duplicateSheet: {
+                            sourceSheetId: templateSheetId,
+                            newSheetName: sheetName,
                         },
                     },
                 ],
@@ -43,7 +62,7 @@ async function ensureSheetExists(auth, spreadsheetId, sheetName) {
 async function addRowToSheet(auth, spreadsheetId, values, sheetName) {
     const request = {
         spreadsheetId,
-        range: `datos`,
+        range: `${sheetName}!A1`,
         valueInputOption: 'RAW',
         insertDataOption: 'INSERT_ROWS',
         resource: {
