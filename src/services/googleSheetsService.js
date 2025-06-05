@@ -12,7 +12,7 @@ function getTodaySheetName() {
     return `${day}/${month}/${year}`;
 }
 
-const TEMPLATE_SHEET_NAME = "02/06/2025";
+const TEMPLATE_SHEET_NAME = "ORIGINAL";
 
 // Obtiene el ID de una hoja por su nombre
 async function getSheetIdByName(auth, spreadsheetId, sheetName) {
